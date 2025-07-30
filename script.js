@@ -1,37 +1,94 @@
-// document.addEventListener("DOMContentLoaded", () => {
-//   let cartCount = 0;
-//   const cartDisplay = document.getElementById("cart-count");
-//   const buttons = document.querySelectorAll(".add-to-cart");
-
-//   buttons.forEach(button => {
-//     button.addEventListener("click", () => {
-//       cartCount++;
-//       cartDisplay.textContent = cartCount;
-//       alert("Product added to cart!");
-//     });
-//   });
-// });
-
 document.addEventListener("DOMContentLoaded", () => {
   const cartDisplay = document.getElementById("cart-count");
-  let cartCount = parseInt(localStorage.getItem("cartCount")) || 0;
-  cartDisplay.textContent = cartCount;
+  const modal = document.getElementById("cart-modal");
+  const closeModal = document.getElementById("close-modal");
+  const cartList = document.getElementById("cart-items-list");
+  const cartIcon = document.querySelector(".cart");
 
-  const buttons = document.querySelectorAll(".add-to-cart");
+  let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
 
-  const hamburger = document.getElementById("hamburger");
-const navLinks = document.getElementById("nav-links");
+  const updateCartDisplay = () => {
+    cartDisplay.textContent = cartItems.length;
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  };
 
-hamburger.addEventListener("click", () => {
+   const hamburger = document.getElementById("hamburger");
+  const navLinks = document.getElementById("nav-links");
+
+  hamburger.addEventListener("click", () => {
   navLinks.classList.toggle("show");
-});
+  });
 
+  const renderCart = () => {
+    cartList.innerHTML = "";
+
+    if (cartItems.length === 0) {
+      cartList.innerHTML = "<li>Your cart is empty.</li>";
+      return;
+    }
+
+    cartItems.forEach((item, index) => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        ${item.name} - ${item.price}
+        <button class="remove-item" data-index="${index}" style="margin-left: 10px;">Remove</button>
+      `;
+      cartList.appendChild(li);
+    });
+
+  
+    document.querySelectorAll(".remove-item").forEach(button => {
+      button.addEventListener("click", (e) => {
+        const index = e.target.getAttribute("data-index");
+        cartItems.splice(index, 1); 
+        updateCartDisplay();
+        renderCart(); 
+      });
+    });
+  };
+
+   const buttons = document.querySelectorAll(".add-to-cart");
   buttons.forEach(button => {
     button.addEventListener("click", () => {
-      cartCount++;
-      localStorage.setItem("cartCount", cartCount);
-      cartDisplay.textContent = cartCount;
-      alert("Product added to cart!");
+      const productName = button.previousElementSibling.previousElementSibling.textContent;
+      const productPrice = button.previousElementSibling.textContent;
+
+      cartItems.push({ name: productName, price: productPrice });
+      updateCartDisplay();
+      showToast(`${productName} added successfully`);
     });
   });
+
+  cartIcon.addEventListener("click", () => {
+    renderCart();
+    modal.style.display = "block";
+  });
+
+  closeModal.addEventListener("click", () => {
+    modal.style.display = "none";
+  });
+
+  window.addEventListener("click", e => {
+    if (e.target === modal) {
+      modal.style.display = "none";
+    }
+  });
+
+  
+  updateCartDisplay();
 });
+
+function showToast(message) {
+  const toastContainer = document.getElementById("toast-container");
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = message;
+
+  toastContainer.appendChild(toast);
+
+  
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}

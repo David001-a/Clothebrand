@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checkout - Urban Threads</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Segoe UI", sans-serif;
+      padding: 1.5rem;
+      margin: 0;
+      background: #f7f7f7;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    #checkout-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 auto;
+      max-width: 600px;
+    }
+
+    #checkout-list li {
+      background: white;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      font-size: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #total-price {
+      font-weight: bold;
+      font-size: 1.2rem;
+      text-align: center;
+      margin: 2rem 0 1rem;
+    }
+
+    .btn {
+      display: block;
+      margin: 0 auto;
+      padding: 0.8rem 2rem;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #218838;
+    }
+
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+    }
+
+    .toast {
+      background-color: #28a745;
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      opacity: 0;
+      animation: slideDownFade 0.4s forwards;
+    }
+
+    @keyframes slideDownFade {
+      0% {
+        transform: translateY(-20px);
+        opacity: 0;
+      }
+      100% {
+        transform: translateY(0px);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      #checkout-list li {
+        flex-direction: column;
+        align-items: flex-start;
+        font-size: 0.95rem;
+      }
+
+      #total-price {
+        font-size: 1rem;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Your Checkout</h1>
+  <ul id="checkout-list"></ul>
+  <p id="total-price">Total: $0.00</p>
+  <button class="btn" onclick="placeOrder()">Place Order</button>
+
+  <div id="toast-container"></div>
+
+  <script>
+    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    const list = document.getElementById("checkout-list");
+    const totalDisplay = document.getElementById("total-price");
+
+    let total = 0;
+
+    if (cartItems.length === 0) {
+      list.innerHTML = "<li>Your cart is empty.</li>";
+      totalDisplay.style.display = "none";
+      document.querySelector('.btn').style.display = 'none';
+    } else {
+      cartItems.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = `${item.name} - ${item.price}`;
+        list.appendChild(li);
+
+        const price = parseFloat(item.price.replace("$", ""));
+        total += price;
+      });
+
+      totalDisplay.textContent = `Total: $${total.toFixed(2)}`;
+    }
+
+    function showToast(message) {
+      const toastContainer = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      toast.textContent = message;
+
+      toastContainer.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    function placeOrder() {
+    const phone = "+2349021671204"; 
+    let message = " MY ORDER\n\n";
+
+    cartItems.forEach(item => {
+      message += `• ${item.name} - ${item.price}\n`;
+    });
+
+    message += `\n TOTAL: $${total.toFixed(2)}\n`;
+
+    const encodedMsg = encodeURIComponent(message);
+    const whatsappURL = `https://wa.me/${phone}?text=${encodedMsg}`;
+
+    localStorage.removeItem("cartItems");
+    window.location.href = whatsappURL;
+  }
+  </script>
+</body>
+</html>
