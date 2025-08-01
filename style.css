@@ -48,6 +48,32 @@ body {
   color: #ff9900;
 }
 
+.search-form {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 1rem auto;
+  max-width: 500px;
+}
+
+.search-form input {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.search-form button {
+  background: #ff9900;
+  color: white;
+  border: none;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
 #hero {
   background: url(images/clothinghero1.jpg) no-repeat center/cover;
   height: 80vh;
