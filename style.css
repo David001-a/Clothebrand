@@ -208,6 +208,37 @@ body {
   animation: slideDownFade 0.4s forwards;
 }
 
+#backToTop {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  width: 40px;
+  height: 40px;
+  background: #ff9900;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+}
+
+#backToTop.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#backToTop:hover {
+  background: #e67e00;
+}
+
 @keyframes slideDownFade {
   0% {
     transform: translateY(-20px);

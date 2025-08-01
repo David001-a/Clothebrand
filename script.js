@@ -59,6 +59,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  const backBtn = document.getElementById("backToTop");
+
+// Show after scrolling down 200px
+window.addEventListener("scroll", () => {
+  if (window.scrollY > 200) {
+    backBtn.classList.add("show");
+  } else {
+    backBtn.classList.remove("show");
+  }
+});
+
+// Smooth scroll to top on click
+backBtn.addEventListener("click", () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
   cartIcon.addEventListener("click", () => {
     renderCart();
     modal.style.display = "block";
