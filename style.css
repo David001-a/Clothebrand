@@ -186,22 +186,7 @@ body {
   background: #e67e00;
 }
 
-.back-home-btn {
-  display: inline-block;
-  margin: 1rem 0;
-  padding: 0.5rem 1rem;
-  background: #111;
-  color: #fff;
-  text-decoration: none;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  transition: background 0.2s;
-}
 
-.back-home-btn:hover {
-  background: #333;
-}
 
 
 .remove-item {
