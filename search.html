@@ -171,23 +171,28 @@ function showToast(message) {
 
 // Delegate clicks for dynamically added buttons
 document.addEventListener("click", (e) => {
-  if (e.target.matches(".add-to-cart-btn")) {
-    const btn = e.target;
-    const name = btn.getAttribute("data-name");
-    const price = parseFloat(btn.getAttribute("data-price"));
-    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+  if (!e.target.matches(".add-to-cart-btn")) return;
 
-    const existing = cartItems.find(item => item.name === name);
-    if (existing) {
-      existing.qty = (existing.qty || 1) + 1;
-    } else {
-      cartItems.push({ name, price: `$${price.toFixed(2)}`, qty: 1 });
-    }
+  const btn = e.target;
+  const name = btn.getAttribute("data-name");
+  const price = parseFloat(btn.getAttribute("data-price"));
 
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
-    updateCartCountDisplay();
-    showToast(`${name} added to cart`);
+  // simple debounce to avoid rapid double firing
+  if (btn.dataset.busy) return;
+  btn.dataset.busy = "1";
+  setTimeout(() => { delete btn.dataset.busy; }, 300);
+
+  const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+  const existing = cartItems.find(item => item.name === name);
+  if (existing) {
+    existing.qty = (existing.qty || 1) + 1;
+  } else {
+    cartItems.push({ name, price: `$${price.toFixed(2)}`, qty: 1 });
   }
+
+  localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  updateCartCountDisplay(); // if you have this sync function
+  showToast(`${name} added to cart`);
 });
 
       // fuzzy-ish substring match
