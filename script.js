@@ -108,3 +108,17 @@ function showToast(message) {
     setTimeout(() => toast.remove(), 300);
   }, 3000);
 }
+
+
+function syncCartCountBadge() {
+  const countEl = document.querySelector("#cart-count");
+  if (!countEl) return;
+  const stored = parseInt(localStorage.getItem("cartCount")) || 0;
+  countEl.textContent = stored;
+}
+
+// Run on load and when storage changes (for same-origin multi-tab)
+syncCartCountBadge();
+window.addEventListener("storage", () => {
+  syncCartCountBadge();
+});

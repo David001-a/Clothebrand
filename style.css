@@ -171,6 +171,21 @@ body {
   background-color: #e67e00;
 }
 
+.add-to-cart-btn {
+  background: #ff9900;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  color: white;
+  transition: background .2s;
+}
+
+.add-to-cart-btn:hover {
+  background: #e67e00;
+}
+
 .remove-item {
   background: none;
   border: none;

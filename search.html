@@ -132,6 +132,64 @@
         return;
       }
 
+      function updateCartCountDisplay() {
+  // If your main page has a cart count element, this could sync via storage event or you can show local indicator
+  // For simplicity, store count in localStorage so the main page can read it too
+  const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+  const totalQty = cartItems.reduce((sum, item) => sum + (item.qty || 1), 0);
+  localStorage.setItem("cartCount", totalQty);
+}
+
+function showToast(message) {
+  let container = document.getElementById("toast-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "toast-container";
+    container.style.position = "fixed";
+    container.style.top = "10px";
+    container.style.left = "50%";
+    container.style.transform = "translateX(-50%)";
+    container.style.zIndex = "9999";
+    document.body.appendChild(container);
+  }
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = message;
+  toast.style.backgroundColor = "#28a745";
+  toast.style.color = "white";
+  toast.style.padding = "0.8rem 1.2rem";
+  toast.style.borderRadius = "6px";
+  toast.style.marginBottom = "8px";
+  toast.style.boxShadow = "0 3px 8px rgba(0,0,0,0.2)";
+  toast.style.transition = "opacity .3s";
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    setTimeout(() => toast.remove(), 400);
+  }, 2500);
+}
+
+// Delegate clicks for dynamically added buttons
+document.addEventListener("click", (e) => {
+  if (e.target.matches(".add-to-cart-btn")) {
+    const btn = e.target;
+    const name = btn.getAttribute("data-name");
+    const price = parseFloat(btn.getAttribute("data-price"));
+    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+
+    const existing = cartItems.find(item => item.name === name);
+    if (existing) {
+      existing.qty = (existing.qty || 1) + 1;
+    } else {
+      cartItems.push({ name, price: `$${price.toFixed(2)}`, qty: 1 });
+    }
+
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    updateCartCountDisplay();
+    showToast(`${name} added to cart`);
+  }
+});
+
       // fuzzy-ish substring match
       const matched = products.filter(p => p.name.toLowerCase().includes(lower));
 
@@ -145,15 +203,20 @@
       matched.forEach(p => {
         const card = document.createElement("div");
         card.className = "product-card";
-        card.innerHTML = `
-          <a href="${p.href}" style="text-decoration:none; color:inherit;">
-            <img src="${p.image}" alt="${p.name}" style="width:100%; border-radius:6px; object-fit:cover;" />
-            <h3 style="margin:8px 0 4px;">${p.name}</h3>
-            <p style="margin:0;">${p.price}</p>
-          </a>
-        `;
-        container.appendChild(card);
-      });
+       card.innerHTML = `
+        <a href="${p.href}" style="text-decoration:none; color:inherit;">
+          <img src="${p.image}" alt="${p.name}" style="width:100%; border-radius:6px; object-fit:cover;" />
+          <h3 style="margin:8px 0 4px;">${p.name}</h3>
+           <p style="margin:0;">${p.price}</p>
+        </a>
+    <div style="margin-top:0.5rem; display:flex; justify-content:center;">
+      <button class="add-to-cart-btn" data-name="${p.name}" data-price="${parseFloat(p.price.replace('$',''))}">
+        Add to Cart
+      </button>
+    </div>
+  `;
+  container.appendChild(card);
+});
     }
 
     // initial load
